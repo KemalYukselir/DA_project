@@ -53,6 +53,19 @@ df_clean.dropna(inplace=True)
 # Convert to date format
 df_clean['Launch Date'] = pd.to_datetime(df_clean['Launch Date'], format='%m/%d/%Y')
 
+# Replace '---' with NaN
+df_clean['% Played Video'] = df_clean['% Played Video'].replace('---', pd.NA)
+
+# Convert column to numeric
+df_clean['% Played Video'] = pd.to_numeric(df_clean['% Played Video'], errors='coerce')
+
+# Calculate the mean and fill NaN values
+mean_played_video = df_clean['% Played Video'].mean()
+df_clean['% Played Video'].fillna(mean_played_video, inplace=True)
+
+print("New unique values")
+print(df_clean['% Played Video'].unique())
+
 print(df_clean.head())
 
 df_clean.info()
