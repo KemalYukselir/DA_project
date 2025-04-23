@@ -1,4 +1,4 @@
-from import_df import get_dataframe
+from import_df import *
 
 
 df = get_dataframe()
@@ -28,6 +28,10 @@ check_uniques_in_objects(df)
 
 # Notes
 """
+Nulls:
+- Instructors has one null - Can be dropped
+
+Objects:
 - Institution seems fine
 - Course Number seems fine
 - Launch date needs to be converted to a format
@@ -36,3 +40,19 @@ check_uniques_in_objects(df)
 - Course Subject seems fine
 - Played video has --- ?? - can aslo be converted to a float
 """
+
+##################
+## Data formatting
+##################
+
+df_clean = df.copy()
+
+# Drop nulls
+df_clean.dropna(inplace=True)
+
+# Convert to date format
+df_clean['Launch Date'] = pd.to_datetime(df_clean['Launch Date'], format='%m/%d/%Y')
+
+print(df_clean.head())
+
+df_clean.info()
