@@ -69,3 +69,12 @@ print(df_clean['% Played Video'].unique())
 print(df_clean.head())
 
 df_clean.info()
+
+
+def get_clean_df():
+    """
+    Import appendix CSV file into a pandas DataFrame.
+    Returns:
+        pd.DataFrame: The imported DataFrame.
+    """
+    return df_clean
