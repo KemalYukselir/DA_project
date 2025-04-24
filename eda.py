@@ -1,30 +1,5 @@
 from import_df import *
-
-
-df = get_dataframe()
-
-##################
-## Check Data types, Nulls and Coloumns
-##################
-
-print(df.info())
-# Seems to be no nulls 
-# We will look at object data types
-
-##################
-## Check unique values in columns 
-##################
-
-# Quick way to check values in all columns
-def check_uniques_in_objects(df):
-  for col in df.columns:
-    if df[col].dtype == 'object':
-      print("\n\n")
-      print(f'{col}: {df[col].unique()}')
-      print("\n\n")
-
-check_uniques_in_objects(df)
-
+import pandas as pd
 
 # Notes
 """
@@ -41,40 +16,63 @@ Objects:
 - Played video has --- ?? - can aslo be converted to a float
 """
 
-##################
-## Data formatting
-##################
+def check_uniques_in_objects(df):
+    """Print unique values for object-type columns."""
+    for col in df.select_dtypes(include=['object']).columns:
+        print(f"\n\n{col}: {df[col].unique()}\n\n")
 
-df_clean = df.copy()
+def check_uniques_in_non_objects(df):
+    """Print unique values for non-object-type columns."""
+    for col in df.select_dtypes(exclude=['object']).columns:
+        print(f"\n\n{col}: {df[col].unique()}\n\n")
 
-# Drop nulls
-df_clean.dropna(inplace=True)
+def clean_dataframe(df):
+    """Clean and format the DataFrame."""
+    df_clean = df.copy()
 
-# Convert to date format
-df_clean['Launch Date'] = pd.to_datetime(df_clean['Launch Date'], format='%m/%d/%Y')
+    # Drop rows with null values
+    df_clean.dropna(inplace=True)
 
-# Replace '---' with NaN
-df_clean['% Played Video'] = df_clean['% Played Video'].replace('---', pd.NA)
+    # Convert 'Launch Date' to datetime format
+    df_clean['Launch Date'] = pd.to_datetime(df_clean['Launch Date'], format='%m/%d/%Y')
 
-# Convert column to numeric
-df_clean['% Played Video'] = pd.to_numeric(df_clean['% Played Video'], errors='coerce')
+    # Replace '---' with NaN and convert '% Played Video' to numeric
+    df_clean['% Played Video'] = pd.to_numeric(
+        df_clean['% Played Video'].replace('---', pd.NA), errors='coerce'
+    )
 
-# Calculate the mean and fill NaN values
-mean_played_video = df_clean['% Played Video'].mean()
-df_clean['% Played Video'].fillna(mean_played_video, inplace=True)
+    # Fill NaN values in '% Played Video' with the column mean
+    mean_played_video = df_clean['% Played Video'].mean()
+    df_clean['% Played Video'].fillna(mean_played_video, inplace=True)
 
-print("New unique values")
-print(df_clean['% Played Video'].unique())
+    return df_clean
 
-print(df_clean.head())
+def main():
+    df = get_dataframe()
 
-df_clean.info()
+    print("\nDataFrame Info:")
+    print(df.info())
 
+    print("\nUnique values in object columns:")
+    check_uniques_in_objects(df)
+
+    print("\nUnique values in non-object columns:")
+    check_uniques_in_non_objects(df)
+
+    df_clean = clean_dataframe(df)
+
+    print("\nNew unique values in '% Played Video':")
+    print(df_clean['% Played Video'].unique())
+
+    print("\nCleaned DataFrame Head:")
+    print(df_clean.head())
+
+    print("\nCleaned DataFrame Info:")
+    print(df_clean.info())
 
 def get_clean_df():
-    """
-    Import appendix CSV file into a pandas DataFrame.
-    Returns:
-        pd.DataFrame: The imported DataFrame.
-    """
-    return df_clean
+    """Return the cleaned DataFrame."""
+    return clean_dataframe(get_dataframe())
+
+if __name__ == "__main__":
+    main()
