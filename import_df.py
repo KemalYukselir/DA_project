@@ -13,6 +13,6 @@ def get_dataframe():
     df = pd.read_csv('appendix.csv')
 
     # Ensure all columns are displayed
-    pd.set_option('display.max_columns', None)
+    # pd.set_option('display.max_columns', None)
 
     return df
