@@ -39,8 +39,18 @@ def feature_eng(df):
     # Creating a copy of the DataFrame
     df = df.copy()
 
-    # Can't be OHE so we drop it.
-    # df.drop(columns=['Address'], inplace=True)
+    # OHE for categorical variables
+    df = pd.get_dummies(df, columns=['Course Subject'], drop_first=True, dtype=int)
+
+    # Irelevant columns
+    df.drop(columns=["Institution","Course Number","Launch Date","Course Title","Instructors"], inplace=True)
+    # df.drop(columns=['% Played Video','Audited (> 50% Course Content Accessed)',"Certified","% Bachelor's Degree or Higher","Institution","Course Number","Launch Date","Course Title","Instructors"], inplace=True)
+
+    # Combined columns
+    
+
+
+
 
     # adding a constant
     df = sm.add_constant(df)
@@ -48,6 +58,8 @@ def feature_eng(df):
     return df  # returning the DataFrame
 
 # Transform the data
+pd.set_option('display.max_columns', None)
+
 X_train_fe = feature_eng(X_train)
 X_test_fe = feature_eng(X_test)
 
@@ -59,7 +71,6 @@ print(all(X_test_fe.index == X_test.index))
 ## Scaling
 ##################
 
-pd.set_option('display.max_columns', None)
 print(df_model.describe())
 
 # Notes
@@ -72,7 +83,6 @@ No scaling needed:
 Scaling needed:
 - Participants (Course Content Accessed) 
 - Audited (> 50% Course Content Accessed) 
-- Certified
 - Audited
 - % Certified of > 50% Course Content Accessed
 - % Played Video  
@@ -91,8 +101,7 @@ Scaling needed:
 columns_to_scale = [
     "Participants (Course Content Accessed)",
     "Audited (> 50% Course Content Accessed)",
-    "Certified",
-    "Audited",
+    "% Audited",
     "% Certified of > 50% Course Content Accessed",
     "% Played Video",
     "% Posted in Forum",
@@ -106,7 +115,7 @@ columns_to_scale = [
     ]
 
 # Initialize scaler
-scaler = RobustScaler()
+scaler = StandardScaler()
 
 # Fit on train and transform both sets
 X_train_fe[columns_to_scale] = scaler.fit_transform(X_train_fe[columns_to_scale])
@@ -115,3 +124,11 @@ X_test_fe[columns_to_scale] = scaler.transform(X_test_fe[columns_to_scale])
 ##################
 ## Model
 ##################
+
+linreg = sm.OLS(y_train, X_train_fe).fit()
+
+##################
+## Summary and metrics
+##################
+
+print(linreg.summary())
