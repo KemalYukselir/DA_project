@@ -21,11 +21,6 @@ def check_uniques_in_objects(df):
     for col in df.select_dtypes(include=['object']).columns:
         print(f"\n\n{col}: {df[col].unique()}\n\n")
 
-def check_uniques_in_non_objects(df):
-    """Print unique values for non-object-type columns."""
-    for col in df.select_dtypes(exclude=['object']).columns:
-        print(f"\n\n{col}: {df[col].unique()}\n\n")
-
 def clean_dataframe(df):
     """Clean and format the DataFrame."""
     df_clean = df.copy()
@@ -55,9 +50,6 @@ def main():
 
     print("\nUnique values in object columns:")
     check_uniques_in_objects(df)
-
-    print("\nUnique values in non-object columns:")
-    check_uniques_in_non_objects(df)
 
     df_clean = clean_dataframe(df)
 
