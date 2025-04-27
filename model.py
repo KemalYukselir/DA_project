@@ -9,6 +9,7 @@ from sklearn.preprocessing import RobustScaler, StandardScaler   # for scaling t
 # Use statsmodels for both the model and its evaluation
 import statsmodels.api as sm    # we'll get the model from
 import statsmodels.tools        # we'll get the evaluation metrics from
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 ##################
 ## Get Dataframe
@@ -17,6 +18,7 @@ import statsmodels.tools        # we'll get the evaluation metrics from
 df_model = get_clean_df()
 
 df_model.info()
+
 
 ##################
 ## Train Test Split
@@ -35,27 +37,30 @@ X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 ##################
 
 def feature_eng(df):
-
-    # Creating a copy of the DataFrame
     df = df.copy()
 
     # OHE for categorical variables
     df = pd.get_dummies(df, columns=['Course Subject'], drop_first=True, dtype=int)
 
-    # Irelevant columns
-    df.drop(columns=["Institution","Course Number","Launch Date","Course Title","Instructors"], inplace=True)
-    # df.drop(columns=['% Played Video','Audited (> 50% Course Content Accessed)',"Certified","% Bachelor's Degree or Higher","Institution","Course Number","Launch Date","Course Title","Instructors"], inplace=True)
+    # Drop irrelevant or highly collinear columns
+    df.drop(columns=[
+        "Honor Code Certificates",
+        "Year",
+        "Institution",
+        "Course Number",
+        "Launch Date",
+        "Course Title",
+        "Instructors",
+        "Participants (Course Content Accessed)",  # DROP
+        "Audited (> 50% Course Content Accessed)",  # DROP
+        "% Female"  # DROP because % Male exists
+    ], inplace=True)
 
-    # Combined columns
-    
-
-
-
-
-    # adding a constant
+    # Add constant
     df = sm.add_constant(df)
 
-    return df  # returning the DataFrame
+    return df
+
 
 # Transform the data
 pd.set_option('display.max_columns', None)
@@ -67,59 +72,30 @@ X_test_fe = feature_eng(X_test)
 print(all(X_train_fe.index == X_train.index))
 print(all(X_test_fe.index == X_test.index))
 
+# Create a DataFrame to hold VIF values
+vif_data = pd.DataFrame()
+vif_data["Feature"] = X_train_fe.columns
+vif_data["VIF"] = [variance_inflation_factor(X_train_fe.values, i) for i in range(X_train_fe.shape[1])]
+print(vif_data)
+
 ##################
 ## Scaling
 ##################
 
-print(df_model.describe())
-
-# Notes
-"""
-Numerical value data ranges:
-No scaling needed:
-- Year 
-- Honor Code Certificates 
-
-Scaling needed:
-- Participants (Course Content Accessed) 
-- Audited (> 50% Course Content Accessed) 
-- Audited
-- % Certified of > 50% Course Content Accessed
-- % Played Video  
-- % Posted in Forum  
-- % Grade Higher Than Zero
-- Total Course Hours (Thousands)  
-- Median Hours for Certification
-- Median Age      
-- % Male    
-- % Female  
-- % Bachelor's Degree or Higher
-"""
+print(X_train_fe.describe())
 
 # Creating a list of columns to scale using Robust Scaler
 # Area of income and Area population has a large range
-columns_to_scale = [
-    "Participants (Course Content Accessed)",
-    "Audited (> 50% Course Content Accessed)",
-    "% Audited",
-    "% Certified of > 50% Course Content Accessed",
-    "% Played Video",
-    "% Posted in Forum",
-    "% Grade Higher Than Zero",
-    "Total Course Hours (Thousands)",
-    "Median Hours for Certification",
-    "Median Age",
-    "% Male",    
-    "% Female",
-    "% Bachelor's Degree or Higher"
-    ]
+num_cols = X_train_fe.select_dtypes(include=['float64', 'int64']).columns.tolist()
+num_cols.remove('const')  # Year is not a feature
+
 
 # Initialize scaler
-scaler = StandardScaler()
+scaler = RobustScaler()
 
 # Fit on train and transform both sets
-X_train_fe[columns_to_scale] = scaler.fit_transform(X_train_fe[columns_to_scale])
-X_test_fe[columns_to_scale] = scaler.transform(X_test_fe[columns_to_scale])
+X_train_fe[num_cols] = scaler.fit_transform(X_train_fe[num_cols])
+X_test_fe[num_cols] = scaler.transform(X_test_fe[num_cols])
 
 ##################
 ## Model
