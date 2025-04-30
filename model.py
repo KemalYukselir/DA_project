@@ -61,6 +61,7 @@ class Linear_Regression_Model:
 
         # Drop irrelevant or highly collinear columns
         df.drop(columns=[
+            "Certified",
             "Honor Code Certificates",
             "Year",
             "Institution",
@@ -158,14 +159,17 @@ class Linear_Regression_Model:
         print("MAE: ", statsmodels.tools.eval_measures.meanabs(self.y_test, y_test_pred))
         print("MSE: ", statsmodels.tools.eval_measures.mse(self.y_test, y_test_pred))
 
-    def predict(self):
-        ##################
-        ## Predict
-        ##################
-        # Will be done later
-        pass
+        print("")
+        self.manual_check(y_test_pred)
 
+    def manual_check(self,y_test_pred):
+        ##################
+        ## Check predictions manually
+        ##################
+        df_manual = pd.DataFrame({'Actual': self.y_test, 'Predicted': y_test_pred})
+        print(df_manual.head(10))
 
+        
 if __name__ == "__main__":
     result = Linear_Regression_Model()
     result.summarise_model()
