@@ -1,71 +1,58 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
 import statsmodels.api as sm
 from model import Linear_Regression_Model
+
 # Load your trained model
-model = Linear_Regression_Model().build_model()
+model = Linear_Regression_Model()
 
 # Title
 st.title("🎓 EdTrack - Predict Course Certification Rates")
 
 # Sidebar for navigation
-mode = st.sidebar.selectbox("Select Input Mode:", ["Upload CSV", "Manual Input"])
-
-# Upload CSV mode
-if mode == "Upload CSV":
-    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-    
-    if uploaded_file:
-        data = pd.read_csv(uploaded_file)
-        
-        # Preprocess if needed (e.g., add constant, encode subject)
-        if 'const' not in data.columns:
-            data = sm.add_constant(data)
-
-        # Make predictions
-        predictions = model.predict(data)
-        
-        st.subheader("Predicted % Certified for Uploaded Courses")
-        data["Predicted % Certified"] = predictions
-        st.dataframe(data)
+mode = st.sidebar.selectbox("Select Input Mode:", ["Manual Input"])
 
 # Manual input mode
-elif mode == "Manual Input":
+if mode == "Manual Input":
     st.subheader("Enter Course Details Manually")
 
-    year = st.number_input("Year", min_value=2012, max_value=2030, value=2025)
-    percent_audited = st.slider("% Audited", 0.0, 100.0, 50.0)
-    percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 50.0)
-    percent_grade_higher = st.slider("% Grade Higher Than Zero", 0.0, 100.0, 70.0)
-    median_age = st.slider("Median Age", 10.0, 80.0, 30.0)
-    percent_male = st.slider("% Male", 0.0, 100.0, 50.0)
-    
+    percent_audited = st.slider("% Audited", 0.0, 100.0, 15.04)
+    percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 54.98)
+    percent_played_video = st.slider("% Played Video", 0.0, 100.0, 83.2)
+    percent_posted_in_forum = st.slider("% Posted in Forum", 0.0, 100.0, 8.17)
+    percent_grade_higher = st.slider("% Grade Higher Than Zero", 0.0, 100.0, 28.97)
+    total_course_hours = st.slider("Total Course Hours (Thousands)", 0.0, 1000.0, 418.94)
+    median_hours_certification = st.slider("Median Hours for Certification", 0.0, 1000.0, 64.45)
+    median_age = st.slider("Median Age", 0.0, 100.0, 26.0)
+    percent_male = st.slider("% Male", 0.0, 100.0, 88.28)
+    percent_bachelor_degree = st.slider("% Bachelor Degree or Higher", 0.0, 100.0, 60.68)
+
     course_subject = st.selectbox("Course Subject", [
         "Government, Health, and Social Science",
         "Humanities, History, Design, Religion, and Education",
         "Science, Technology, Engineering, and Mathematics"
     ])
-    
+
     # Create the input dataframe
     input_data = {
         "const": 1,
-        "Year": year,
         "% Audited": percent_audited,
         "% Certified of > 50% Course Content Accessed": percent_certified_50plus,
+        "% Played Video": percent_played_video,
+        "% Posted in Forum": percent_posted_in_forum,
         "% Grade Higher Than Zero": percent_grade_higher,
+        "Total Course Hours (Thousands)": total_course_hours / 1000,
+        "Median Hours for Certification": median_hours_certification,
         "Median Age": median_age,
         "% Male": percent_male,
+        "% Bachelor's Degree or Higher": percent_bachelor_degree,
         "Course Subject_Government, Health, and Social Science": 1 if course_subject == "Government, Health, and Social Science" else 0,
         "Course Subject_Humanities, History, Design, Religion, and Education": 1 if course_subject == "Humanities, History, Design, Religion, and Education" else 0,
         "Course Subject_Science, Technology, Engineering, and Mathematics": 1 if course_subject == "Science, Technology, Engineering, and Mathematics" else 0,
     }
-    
-    input_df = pd.DataFrame([input_data])
 
     # Predict
     if st.button("Predict % Certified"):
-        prediction = model.predict(input_df)
-        st.success(f"Predicted % Certified: {prediction.iloc[0]:.2f}%")
-
+        prediction = model.predict_from_model(input_data)
+        st.success(f"Percentage of students who will certify: {prediction.iloc[0]:.2f}%")
