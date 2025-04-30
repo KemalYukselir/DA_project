@@ -19,7 +19,9 @@ class Linear_Regression_Model:
         self.X_train, self.X_test, self.y_train, self.y_test = self.split_train_test()
         self.X_train_fe, self.X_test_fe = self.prepare_features()
         self.calculate_vif()
+        self.scaler = ""
         self.apply_scaling()
+        self.linreg = self.build_model()
 
     def __repr__(self):
         return f"Linear Regression Model: {self.linreg}"
@@ -121,11 +123,11 @@ class Linear_Regression_Model:
         num_cols.remove('const')  # Year is not a feature
 
         # Initialize scaler
-        scaler = RobustScaler()
+        self.scaler = RobustScaler()
 
         # Fit on train and transform both sets
-        self.X_train_fe[num_cols] = scaler.fit_transform(self.X_train_fe[num_cols])
-        self.X_test_fe[num_cols] = scaler.transform(self.X_test_fe[num_cols])
+        self.X_train_fe[num_cols] = self.scaler.fit_transform(self.X_train_fe[num_cols])
+        self.X_test_fe[num_cols] = self.scaler.transform(self.X_test_fe[num_cols])
 
     def build_model(self):
         ##################
@@ -141,13 +143,12 @@ class Linear_Regression_Model:
         ##################
         ## Summary and metrics
         ##################
-        linreg = self.build_model()
 
         # Print the summary of the model
-        print(linreg.summary())
+        print(self.linreg.summary())
 
-        y_pred = linreg.predict(self.X_train_fe)
-        y_test_pred = linreg.predict(self.X_test_fe)
+        y_pred = self.linreg.predict(self.X_train_fe)
+        y_test_pred = self.linreg.predict(self.X_test_fe)
 
         print("\nTrain Metrics\n")
         print("RMSE: ", statsmodels.tools.eval_measures.rmse(self.y_train, y_pred))
@@ -169,7 +170,40 @@ class Linear_Regression_Model:
         df_manual = pd.DataFrame({'Actual': self.y_test, 'Predicted': y_test_pred})
         print(df_manual.head(10))
 
+    def predict_from_model(self,test_dict):
+        # test_dict = {
+        #     "const": 1,
+        #     "% Audited": 15.04,
+        #     "% Certified of > 50% Course Content Accessed": 54.98,
+        #     "% Played Video": 83.2,
+        #     "% Posted in Forum": 8.17,
+        #     "% Grade Higher Than Zero": 28.97,
+        #     "Total Course Hours (Thousands)": 418.94,
+        #     "Median Hours for Certification": 64.45,
+        #     "Median Age": 26.0,
+        #     "% Male": 88.28,
+        #     "% Bachelor's Degree or Higher": 60.68,
+        #     "Course Subject_Government, Health, and Social Science": 0,
+        #     "Course Subject_Humanities, History, Design, Religion, and Education": 0,
+        #     "Course Subject_Science, Technology, Engineering, and Mathematics": 1,
+        # }
+
+        test_df = pd.DataFrame([test_dict])
+
+        # Ensure the same column order as training data
+        test_df = test_df[self.X_train_fe.columns]
+
+        # Scale the numeric columns
+        num_cols = self.X_train_fe.select_dtypes(include=['float64', 'int64']).columns.tolist()
+        num_cols.remove('const')
+        test_df[num_cols] = self.scaler.transform(test_df[num_cols])
+
+        # Predict
+        prediction = self.linreg.predict(test_df)
+        return prediction
+
+
         
 if __name__ == "__main__":
     result = Linear_Regression_Model()
-    result.summarise_model()
+    result.predict_from_model()
