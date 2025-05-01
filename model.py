@@ -8,6 +8,8 @@ from sklearn.preprocessing import RobustScaler    # for scaling the data
 # Import target encoder
 from category_encoders import TargetEncoder  as ce   # for target encoding categorical features
 
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score, KFold
 
 # Use statsmodels for both the model and its evaluation
 import statsmodels.api as sm    # we'll get the model from
@@ -20,6 +22,7 @@ pd.set_option('display.max_columns', None)
 class Linear_Regression_Model:
     DEBUG = True
     def __init__(self):
+        # Cleaned dataframe
         self.df_model = self.load_dataframe()
         self.apply_target_encoding()
         self.X_train, self.X_test, self.y_train, self.y_test = self.split_train_test()
@@ -185,6 +188,28 @@ class Linear_Regression_Model:
 
         print("")
         self.manual_check(y_test_pred)
+        print("")
+        # Cross-validation
+        self.cross_validation_score(cv=10)
+
+    def cross_validation_score(self, cv=5):
+        # Use the scaled + encoded training data
+        X = self.X_train_fe
+        y = self.y_train
+
+        # Use scikit-learn's LinearRegression (same algorithm, just different lib)
+        model = LinearRegression()
+
+        # Use K-Fold cross-validation
+        kf = KFold(n_splits=cv, shuffle=True, random_state=42)
+
+        # Get scores (neg mean squared error, we take the root to get RMSE)
+        neg_mse_scores = cross_val_score(model, X, y, scoring='neg_mean_squared_error', cv=kf)
+
+        rmse_scores = np.sqrt(-neg_mse_scores)
+        print(f"Cross-Validation RMSE scores: {rmse_scores}")
+        print(f"Average CV RMSE: {rmse_scores.mean():.3f}")
+
 
     def manual_check(self,y_test_pred):
         ##################
