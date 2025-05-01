@@ -19,17 +19,18 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 # Set display options for pandas
 pd.set_option('display.max_columns', None)
 
-class Linear_Regression_Model:
-    DEBUG = True
+class LinearRegressionModel:
+    DEBUG = False
     def __init__(self):
         # Cleaned dataframe
         self.df_model = self.load_dataframe()
-        self.apply_target_encoding()
         self.X_train, self.X_test, self.y_train, self.y_test = self.split_train_test()
+        self.encoder = ""
+        self.apply_target_encoding()
         self.X_train_fe, self.X_test_fe = self.prepare_features()
-        self.calculate_vif()
         self.scaler = ""
         self.apply_scaling()
+        self.calculate_vif()
         self.linreg = self.build_model()
 
     def __repr__(self):
@@ -47,8 +48,13 @@ class Linear_Regression_Model:
         return df_model
     
     def apply_target_encoding(self):
-        encoder = ce(cols=["Course Subject"])
-        self.df_model["Course Subject"] = encoder.fit_transform(self.df_model["Course Subject"], self.df_model['% Certified'])
+        # After splitting:
+        self.encoder = ce()
+        self.X_train['Course Subject'] = self.encoder.fit_transform(self.X_train['Course Subject'], self.y_train)
+        self.X_test['Course Subject'] = self.encoder.transform(self.X_test['Course Subject'])
+
+        # encoder = ce(cols=["Course Subject"])
+        # self.df_model["Course Subject"] = encoder.fit_transform(self.df_model["Course Subject"], self.df_model['% Certified'])
 
     def split_train_test(self):
         ##################
@@ -90,17 +96,6 @@ class Linear_Regression_Model:
             "Audited (> 50% Course Content Accessed)",  # DROP High VIF
             "% Female"  # DROP because % Male exists
         ], inplace=True)
-    
-        # Target encode
-        # def apply_target_encoding(X_train, X_test, y_train, col_name, target_name='% Certified'):
-        #         temp_df = X_train.copy()
-        #         temp_df[target_name] = y_train
-        #         target_mean_map = temp_df.groupby(col_name)[target_name].mean()
-        #         X_train[f'{col_name}_encoded'] = X_train[col_name].map(target_mean_map)
-        #         X_test[f'{col_name}_encoded'] = X_test[col_name].map(target_mean_map)
-        #         X_train.drop(columns=[col_name], inplace=True)
-        #         X_test.drop(columns=[col_name], inplace=True)
-        #         return X_train, X_test
 
         # Add constant
         df = sm.add_constant(df)
@@ -132,6 +127,7 @@ class Linear_Regression_Model:
         vif_data = pd.DataFrame()
         vif_data["Feature"] = self.X_train_fe.columns
         vif_data["VIF"] = [variance_inflation_factor(self.X_train_fe.values, i) for i in range(self.X_train_fe.shape[1])]
+        vif_data = vif_data[vif_data["Feature"] != "const"]
         if self.DEBUG:
             print(vif_data)
 
@@ -170,6 +166,9 @@ class Linear_Regression_Model:
         ## Summary and metrics
         ##################
 
+        print("Check train df:")
+        print(self.X_train_fe.head(10))
+
         # Print the summary of the model
         print(self.linreg.summary())
 
@@ -207,36 +206,48 @@ class Linear_Regression_Model:
         neg_mse_scores = cross_val_score(model, X, y, scoring='neg_mean_squared_error', cv=kf)
 
         rmse_scores = np.sqrt(-neg_mse_scores)
-        print(f"Cross-Validation RMSE scores: {rmse_scores}")
-        print(f"Average CV RMSE: {rmse_scores.mean():.3f}")
+        print(f"(Train) Cross-Validation RMSE scores: {rmse_scores}")
+        print(f"(Train )Average CV RMSE: {rmse_scores.mean():.3f}")
+        print("\n")
+
+        X = self.X_test_fe
+        y = self.y_test
+
+        # Use K-Fold cross-validation
+        kf = KFold(n_splits=cv, shuffle=True, random_state=42)
+
+        # Get scores (neg mean squared error, we take the root to get RMSE)
+        neg_mse_scores = cross_val_score(model, X, y, scoring='neg_mean_squared_error', cv=kf)
+
+        rmse_scores = np.sqrt(-neg_mse_scores)
+
+        print(f"(Test) Cross-Validation RMSE scores: {rmse_scores}")
+        print(f"(Test )Average CV RMSE: {rmse_scores.mean():.3f}")
 
 
     def manual_check(self,y_test_pred):
         ##################
         ## Check predictions manually
         ##################
+        print("Manual Check\n")
         df_manual = pd.DataFrame({'Actual': self.y_test, 'Predicted': y_test_pred})
         print(df_manual.head(10))
 
     def predict_from_model(self,test_dict):
-        # test_dict = {
-        #     "const": 1,
-        #     "% Audited": 15.04,
-        #     "% Certified of > 50% Course Content Accessed": 54.98,
-        #     "% Played Video": 83.2,
-        #     "% Posted in Forum": 8.17,
-        #     "% Grade Higher Than Zero": 28.97,
-        #     "Total Course Hours (Thousands)": 418.94,
-        #     "Median Hours for Certification": 64.45,
-        #     "Median Age": 26.0,
-        #     "% Male": 88.28,
-        #     "% Bachelor's Degree or Higher": 60.68,
-        #     "Course Subject_Government, Health, and Social Science": 0,
-        #     "Course Subject_Humanities, History, Design, Religion, and Education": 0,
-        #     "Course Subject_Science, Technology, Engineering, and Mathematics": 1,
-        # }
-
+        ##################
+        ## Predict from model
+        ##################
+        # Separate out 'Course Subject' before forming DataFrame
+        course_subject = test_dict.pop("Course Subject")
         test_df = pd.DataFrame([test_dict])
+
+        # Create a 1-row DataFrame with same column name
+        subject_df = pd.DataFrame({"Course Subject": [course_subject]})
+        encoded_subject = self.encoder.transform(subject_df)
+
+        # Assign the encoded value back into the test row
+        test_df["Course Subject"] = encoded_subject["Course Subject"].values
+
 
         # Ensure the same column order as training data
         test_df = test_df[self.X_train_fe.columns]
@@ -246,6 +257,9 @@ class Linear_Regression_Model:
         num_cols.remove('const')
         test_df[num_cols] = self.scaler.transform(test_df[num_cols])
 
+        print("Test df:")
+        print(test_df.head(10))
+
         # Predict
         prediction = self.linreg.predict(test_df)
         return prediction
@@ -253,5 +267,5 @@ class Linear_Regression_Model:
 
         
 if __name__ == "__main__":
-    result = Linear_Regression_Model()
+    result = LinearRegressionModel()
     result.summarise_model()
