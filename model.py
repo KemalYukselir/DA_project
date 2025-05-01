@@ -20,7 +20,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 pd.set_option('display.max_columns', None)
 
 class LinearRegressionModel:
-    DEBUG = False
+    DEBUG = True
     def __init__(self):
         # Cleaned dataframe
         self.df_model = self.load_dataframe()
@@ -53,8 +53,6 @@ class LinearRegressionModel:
         self.X_train['Course Subject'] = self.encoder.fit_transform(self.X_train['Course Subject'], self.y_train)
         self.X_test['Course Subject'] = self.encoder.transform(self.X_test['Course Subject'])
 
-        # encoder = ce(cols=["Course Subject"])
-        # self.df_model["Course Subject"] = encoder.fit_transform(self.df_model["Course Subject"], self.df_model['% Certified'])
 
     def split_train_test(self):
         ##################
@@ -77,24 +75,28 @@ class LinearRegressionModel:
 
         df = df.copy()
 
+        # Combine features
+        df['% Deep learners'] = (df['Audited (> 50% Course Content Accessed)'] / df['Participants (Course Content Accessed)']) * 100
+
         # Drop irrelevant or highly collinear columns
         df.drop(columns=[
-            # "Course Subject", # Temp
-            "% Bachelor's Degree or Higher", # Drop from log
-            "% Played Video",  # DROP because high p value
-            "% Posted in Forum",  # DROP because high p value
+            # "% Bachelor's Degree or Higher", # Drop from log
+            "% Played Video",  # Drop - High p value
+            "% Posted in Forum",  # Drop - High p value
             "Median Hours for Certification",  # DROP because high p value
             "Certified", # Very correlated with target
-            "Honor Code Certificates",
+            "Honor Code Certificates",  # Useless
             "Year", # Useless
-            "Institution",
+            "Institution",  # Useless
             "Course Number", # Useless
             "Launch Date", # Useless
-            "Course Title",
+            "Course Title",  # Useless
             "Instructors", # Useless
             "Participants (Course Content Accessed)",  # DROP High VIF
             "Audited (> 50% Course Content Accessed)",  # DROP High VIF
-            "% Female"  # DROP because % Male exists
+            "% Audited",  # Highly correlated with Deep learners
+            "% Female",  # DROP because % Male exists
+            # "% Certified of > 50% Course Content Accessed"
         ], inplace=True)
 
         # Add constant
@@ -166,9 +168,6 @@ class LinearRegressionModel:
         ## Summary and metrics
         ##################
 
-        print("Check train df:")
-        print(self.X_train_fe.head(10))
-
         # Print the summary of the model
         print(self.linreg.summary())
 
@@ -190,6 +189,9 @@ class LinearRegressionModel:
         print("")
         # Cross-validation
         self.cross_validation_score(cv=10)
+
+        print("\nManual check x train fe:")
+        print(self.X_train_fe.head(10))
 
     def cross_validation_score(self, cv=5):
         # Use the scaled + encoded training data
