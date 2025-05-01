@@ -17,22 +17,23 @@ mode = st.sidebar.selectbox("Select Input Mode:", ["Manual Input"])
 if mode == "Manual Input":
     st.subheader("Enter Course Details Manually")
 
-    percent_audited = st.slider("% Audited", 0.0, 100.0, 15.04)
-    percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 54.98)
-    percent_played_video = st.slider("% Played Video", 0.0, 100.0, 83.2)
-    percent_posted_in_forum = st.slider("% Posted in Forum", 0.0, 100.0, 8.17)
-    percent_grade_higher = st.slider("% Grade Higher Than Zero", 0.0, 100.0, 28.97)
-    total_course_hours = st.slider("Total Course Hours (Thousands)", 0.0, 1000.0, 418.94)
-    median_hours_certification = st.slider("Median Hours for Certification", 0.0, 1000.0, 64.45)
-    median_age = st.slider("Median Age", 0.0, 100.0, 26.0)
-    percent_male = st.slider("% Male", 0.0, 100.0, 88.28)
-    percent_bachelor_degree = st.slider("% Bachelor Degree or Higher", 0.0, 100.0, 60.68)
-
     course_subject = st.selectbox("Course Subject", [
         "Government, Health, and Social Science",
         "Humanities, History, Design, Religion, and Education",
         "Science, Technology, Engineering, and Mathematics"
     ])
+
+    percent_male = st.slider("% Male Participants In Course", 0.0, 100.0, 88.28)
+    percent_bachelor_degree = st.slider("% Participants with Bachelor Degree or Higher", 0.0, 100.0, 60.68)
+    total_course_hours = st.slider("Total Course Hours (Thousands)", 0.0, 1000.0, 418.94)
+    median_age = st.slider("Median Age of Participants", 0.0, 100.0, 26.0)
+
+    percent_audited = st.slider("% Audited", 0.0, 100.0, 15.04)
+    percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 54.98)
+    percent_played_video = st.slider("% Played Video", 0.0, 100.0, 83.2)
+    percent_posted_in_forum = st.slider("% Posted in Forum", 0.0, 100.0, 8.17)
+    percent_grade_higher = st.slider("% Grade Higher Than Zero", 0.0, 100.0, 28.97)
+    median_hours_certification = st.slider("Median Hours for Certification", 0.0, 1000.0, 64.45)
 
     # Create the input dataframe
     input_data = {
