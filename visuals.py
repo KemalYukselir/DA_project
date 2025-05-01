@@ -1,6 +1,5 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
-import numpy as np
 from eda import get_clean_df
 
 df_visuals = get_clean_df()
