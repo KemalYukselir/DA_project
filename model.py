@@ -1,8 +1,13 @@
 from eda import get_clean_df
 import pandas as pd
+import numpy as np
 
 from sklearn.model_selection import train_test_split    # for performing train-test split on the data
 from sklearn.preprocessing import RobustScaler    # for scaling the data
+
+# Import target encoder
+from category_encoders import TargetEncoder  as ce   # for target encoding categorical features
+
 
 # Use statsmodels for both the model and its evaluation
 import statsmodels.api as sm    # we'll get the model from
@@ -13,9 +18,10 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 pd.set_option('display.max_columns', None)
 
 class Linear_Regression_Model:
-    DEBUG = False
+    DEBUG = True
     def __init__(self):
         self.df_model = self.load_dataframe()
+        self.apply_target_encoding()
         self.X_train, self.X_test, self.y_train, self.y_test = self.split_train_test()
         self.X_train_fe, self.X_test_fe = self.prepare_features()
         self.calculate_vif()
@@ -36,6 +42,10 @@ class Linear_Regression_Model:
             df_model.info()
 
         return df_model
+    
+    def apply_target_encoding(self):
+        encoder = ce(cols=["Course Subject"])
+        self.df_model["Course Subject"] = encoder.fit_transform(self.df_model["Course Subject"], self.df_model['% Certified'])
 
     def split_train_test(self):
         ##################
@@ -58,23 +68,36 @@ class Linear_Regression_Model:
 
         df = df.copy()
 
-        # OHE for categorical variables
-        df = pd.get_dummies(df, columns=['Course Subject'], drop_first=True, dtype=int)
-
         # Drop irrelevant or highly collinear columns
         df.drop(columns=[
-            "Certified",
+            # "Course Subject", # Temp
+            "% Bachelor's Degree or Higher", # Drop from log
+            "% Played Video",  # DROP because high p value
+            "% Posted in Forum",  # DROP because high p value
+            "Median Hours for Certification",  # DROP because high p value
+            "Certified", # Very correlated with target
             "Honor Code Certificates",
-            "Year",
+            "Year", # Useless
             "Institution",
-            "Course Number",
-            "Launch Date",
+            "Course Number", # Useless
+            "Launch Date", # Useless
             "Course Title",
-            "Instructors",
-            "Participants (Course Content Accessed)",  # DROP
-            "Audited (> 50% Course Content Accessed)",  # DROP
+            "Instructors", # Useless
+            "Participants (Course Content Accessed)",  # DROP High VIF
+            "Audited (> 50% Course Content Accessed)",  # DROP High VIF
             "% Female"  # DROP because % Male exists
         ], inplace=True)
+    
+        # Target encode
+        # def apply_target_encoding(X_train, X_test, y_train, col_name, target_name='% Certified'):
+        #         temp_df = X_train.copy()
+        #         temp_df[target_name] = y_train
+        #         target_mean_map = temp_df.groupby(col_name)[target_name].mean()
+        #         X_train[f'{col_name}_encoded'] = X_train[col_name].map(target_mean_map)
+        #         X_test[f'{col_name}_encoded'] = X_test[col_name].map(target_mean_map)
+        #         X_train.drop(columns=[col_name], inplace=True)
+        #         X_test.drop(columns=[col_name], inplace=True)
+        #         return X_train, X_test
 
         # Add constant
         df = sm.add_constant(df)
@@ -206,4 +229,4 @@ class Linear_Regression_Model:
         
 if __name__ == "__main__":
     result = Linear_Regression_Model()
-    result.predict_from_model()
+    result.summarise_model()
