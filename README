@@ -1,20 +1,35 @@
-# Data Analysis Project
+## 🎓 Course Certification Rates Predictor 🎓
+### By Kemal Yukselir
 
-## Overview
-Many students enroll in online courses but disengage early. If we can predict which students are at risk of dropping out, educators and platforms can intervene earlier.
+**Objective:**  
+Predict the percentage of students who will complete and earn a certificate in an online course, using historical course performance data.
+            
+# References
+- [Harvard / MIT](https://www.kaggle.com/datasets/edx/course-study?resource=download)
 
-Goal:
-Build a system that analyses student engagement data and predicts the likelihood of dropout.
+**Key Features:**
+- Linear regression model
+- Feature engineering 
+- Robust scaling  
+- Feature combination
+- Cross-validation
+- Target encoding for categorical variables
+- Streamlit dashboard with live predictions
 
-## Features
-- Data cleaning and preprocessing
-- Exploratory data analysis (EDA)
-- Data visualization
-- Statistical modeling and hypothesis testing
+**Modules:**
+- Pandas
+- NumPy
+- Scikit-learn
+- Statsmodels
+- Category Encoders
+- Streamlit
+- Matplotlib
+- Seaborn
 
-## Requirements
-- Python 3.x
-- Required libraries: pandas, numpy, matplotlib, seaborn, scikit-learn
-
-## How to Run
-1. Clone the repository:
+**Project Highlights:**
+- R² = 0.823
+- Cond. No. = 9.04
+- AIC, BIC = 1166, 1197
+- F-statistic = 128.7        
+- (Train) Average CV RMSE: 3.077
+- (Test) Average CV RMSE: 3.100
