@@ -9,12 +9,11 @@ def load_model():
 
 model = load_model()
 
-
 # Sidebar for navigation
-page = st.sidebar.selectbox("📂 Select a Page", ["Project Overview", "Predictor"])
+page = st.sidebar.radio("📂 Select a Page", ["Project Overview","Ethical Standards", "Predictor"])
 mode = st.sidebar.selectbox("Select Input Mode:", ["Manual Input"])
 
-if page == "README":
+if page == "Project Overview":
     st.title("📘 Project README 📘")
 
     st.markdown("""
@@ -54,6 +53,44 @@ if page == "README":
     - (Train) Average CV RMSE: 3.077
     - (Test) Average CV RMSE: 3.100
     """)
+elif page == "Ethical Standards":
+    st.title("📄 Project Ethical Standards 📄")
+
+    st.markdown("""
+    ## Responsible Use of Machine Learning in Education 
+
+    **Overview**  
+    - This project uses historical data from Harvard and MIT to predict the percentage of students likely to complete a course and earn a certificate.  
+    - While such models can help institutions improve course design, they also carry ethical risks that must be addressed.
+
+    ### ⚖️ Key Ethical Considerations
+
+    - **Bias in Data**  
+      The dataset reflects historical learner behavior, which may be biased toward certain age groups or educational backgrounds.  
+      Predictions should not be used to make high-stakes decisions for individuals.
+
+    - **Data Privacy**  
+      This analysis uses anonymous and aggregate course data. No personal identifiers are included.
+
+    - **Fairness in Features**  
+      Categorical variables like `Course Subject` are encoded using **target encoding** to avoid arbitrary weight assignments.  
+      Gender-based columns like `% Male` and `% Female` are handled with caution and transparency.
+
+    - **Transparency & Interpretability**  
+      Head over to Project Overview for a detailed rundown of how the model is created.
+                
+    - **Intended Use**  
+      This tool is designed for **educational insights only** — such as identifying which course features may lead to higher certification rates.  
+      This tool may be used to help twoards improving current ongoing courses institutions may have.
+                
+      It is **not** intended to create bias towards any group of learners such as ❌**age**❌.
+
+    ### 📚 Further Reading
+
+    - [Harvard / MIT MOOC Dataset on Kaggle](https://www.kaggle.com/datasets/edx/course-study?resource=download)
+    - [The Ethics of Learning Analytics (Jisc Report)](https://www.jisc.ac.uk/guides/code-of-practice-for-learning-analytics)
+    """)
+
 else:
     # Title
     st.title("🎓 Student Certification Rate Predictor")
