@@ -128,6 +128,22 @@ def insights_page():
   - **Support Systems** -> Implementing mentorship programs or peer support groups can help students tackle challenges.
   - **Gamification** -> Adding game-like elements to the learning process can make it more engaging and less daunting.
   """)
+  st.image("assets/Figure_3.png", use_container_width=True)
+  st.markdown("""
+    **Looking at this line plot, I wanted to compare how students posting in forums affects certification rates**  
+    - This graph is based on **certification rate averages** grouped by **forum post percentage**.  
+    - On average, the **more students post in forums**, the **higher the certification rates**.
+
+    **Potential reasons:**    
+    - **Answering problems** → As seen earlier, students may drop out when they struggle with course material. Forums likely help students **understand problems better**, reducing dropout rates.  
+    - **Connection** → Students who engage in forums may feel more **connected to the community**, increasing their motivation to **return and complete the course**.  
+
+    **Next Potential Steps:**  
+    - **Interactive forum** → Build a **fun, welcoming forum** where students can freely ask questions and engage with peers.  
+    - **Reminders** → Send **gentle reminders** encouraging forum participation before and during the course.  
+    - **Experts** → Involve **active experts or mentors** in the forums to support students when they get stuck.
+  """)
+
 
 def model_page():
     # Title
