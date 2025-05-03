@@ -110,7 +110,24 @@ def insights_page():
   - Moral or ethical framing increases engagement
       - **Hero** and **saving** often symbolize moral missions or ethical discussions, making course content more emotionally resonant.
   """)
-
+  st.image("assets/Figure_2.png", use_container_width=True)
+  st.markdown("""
+  **Looking at this barplot, I wanted to compare how course subjects are performing**
+  - This graph is based on certifcation rate averages of course subjects.
+  - **STEM** course subjects including **Computer Science** on average have less than 6% certification rates.
+  - **Other** course subjects have 8% and higher certification rate on average.
+  - **STEM** subjects including **Computer Science** are performing worse at on average
+  
+  **Potential reasons:**    
+  - **Higher Cognitive Load** -> For example, Problem-solving, programming, Advanced math and more can be mentally taxing.    
+  - **Steeper Learning Curve** -> Unlike most other course subjects, STEM and computer science requires years of practise and incremntal mastery.
+  - **Debugging Fatigue** -> In programming, debugging is a common task that can be frustrating and time-consuming. This can lead to students giving up and dropping out.
+  
+  **Next Potential Steps:**
+  - **Course Design** -> Consider breaking down complex topics into smaller, more manageable modules.
+  - **Support Systems** -> Implementing mentorship programs or peer support groups can help students tackle challenges.
+  - **Gamification** -> Adding game-like elements to the learning process can make it more engaging and less daunting.
+  """)
 
 def model_page():
     # Title
