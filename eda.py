@@ -4,7 +4,7 @@ import pandas as pd
 # Notes
 """
 Nulls:
-- Instructors has one null - Can be dropped
+- Instructors has one null - Row can be dropped
 
 Objects:
 - Institution seems fine
