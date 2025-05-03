@@ -99,25 +99,24 @@ def get_course_title_common_words():
     plt.tight_layout()
     plt.show()
 
-# Bachelors degree vs Certification rate lineplot
-def get_bachelors_degree_certification_rate():
-    """Generate a line plot to visualize the relationship between bachelor's degree and certification rate."""
-    # Group by % Bachelor's Degree or Higher and calculate mean % Certified
-    grouped_df = df_visuals.groupby('% Played Video')['% Certified'].mean().reset_index()
+    # Course subject vs Certification rate
+def get_course_subject_certification_rate():
+    """Generate a bar plot to visualize the relationship between course subject and certification rate."""
+    # Group by Course Subject and calculate mean % Certified
+    grouped_df = df_visuals.groupby('Course Subject')['% Certified'].mean().reset_index()
 
-    # Visual with lineplot
+    # Visual with barplot
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.lineplot(x='% Played Video', y='% Certified', data=grouped_df, marker='o', ax=ax)
-    ax.set_title('Certification Rate vs. % Played Video', fontsize=16)
-    ax.set_xlabel('% Played Video', fontsize=14)
+    sns.barplot(x='Course Subject', y='% Certified', data=grouped_df, palette='viridis', ax=ax)
+    ax.set_title('Certification Rate by Course Subject', fontsize=16)
+    ax.set_xlabel('Course Subject', fontsize=14)
     ax.set_ylabel('% Certified', fontsize=14)
 
     # Show figure
-    plt.xticks(rotation=45)
-    plt.grid(True)
+    plt.xticks(rotation=30)
     plt.tight_layout()
     plt.show()
 
 
 if __name__ == "__main__":
-    get_course_title_common_words()
+    get_course_subject_certification_rate()
