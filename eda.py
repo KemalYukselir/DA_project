@@ -47,6 +47,7 @@ def main():
 
     print("\nDataFrame Info:")
     print(df.info())
+    print(df.shape)
 
     print("\nUnique values in object columns:")
     check_uniques_in_objects(df)
