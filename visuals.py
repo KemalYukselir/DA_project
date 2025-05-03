@@ -117,6 +117,47 @@ def get_course_subject_certification_rate():
     plt.tight_layout()
     plt.show()
 
+# % Certified of > 50% Course Content Accessed vs certifican rate
+# def get_bachelors_degree_certification_rate():
+#     """Generate a line plot to visualize the relationship between bachelor's degree and certification rate."""
+#     plt.figure(figsize=(10, 6))
+#     plt.scatter(df_visuals["% Certified of > 50% Course Content Accessed"],
+#                 df_visuals["% Certified"],
+#                 s=60, alpha=0.7, edgecolors='k')
+
+#     # Optional: Add trendline
+#     z = np.polyfit(df_visuals["% Certified of > 50% Course Content Accessed"], df_visuals["% Certified"], 1)
+#     p = np.poly1d(z)
+#     plt.plot(df_visuals["% Certified of > 50% Course Content Accessed"], p(df_visuals["% Certified of > 50% Course Content Accessed"]), "r--", label="Trend")
+
+#     plt.title("Certification Rate vs. % Certified of > 50% Accessed", fontsize=15)
+#     plt.xlabel("% Certified of > 50% Course Content Accessed", fontsize=12)
+#     plt.ylabel("% Certified", fontsize=12)
+#     plt.grid(True, linestyle='--', alpha=0.5)
+#     plt.legend()
+#     plt.tight_layout()
+#     plt.show()
+
+# Posted in forum vs certification rate lineplot
+def get_posted_forum_certification_rate():
+    """Generate a line plot to visualize the relationship between forum participation and certification rate."""
+    x = df_visuals["% Posted in Forum"]
+    df_visuals['Forum Bin'] = pd.cut(x, bins=[0, 5, 10, 15, 20, 25, 30, 35], right=False)
+
+    # Calculate the mean certification rate for each bin
+    bin_means = df_visuals.groupby('Forum Bin')['% Certified'].mean().reset_index()
+
+    # Convert bins to string for better visualization
+    bin_means['Forum Bin'] = bin_means['Forum Bin'].astype(str)
+
+    plt.figure(figsize=(10, 6))
+    sns.lineplot(x='Forum Bin', y='% Certified', data=bin_means, marker='o')
+    plt.title("Average Certification Rate by Forum Participation Bin")
+    plt.xlabel("Forum Participation (%) Bin")
+    plt.ylabel("% Certified")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
-    get_course_subject_certification_rate()
+    get_posted_forum_certification_rate()
