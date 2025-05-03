@@ -1,59 +1,62 @@
 import streamlit as st
 import pandas as pd
 from model import LinearRegressionModel
+from visuals import get_course_title_common_words
 
-# Load the trained model once
 @st.cache_resource
 def load_model():
     return LinearRegressionModel()
 
+# Preload cached resources
 model = load_model()
 
 # Sidebar for navigation
-page = st.sidebar.radio("📂 Select a Page", ["Project Overview","Ethical Standards", "Predictor"])
+page = st.sidebar.radio("📂 Select a Page", ["Project Overview","Ethical Standards","Insights" ,"Predictor"])
 mode = st.sidebar.selectbox("Select Input Mode:", ["Manual Input"])
 
-if page == "Project Overview":
-    st.title("📘 Project README 📘")
+def project_overview_page():
+  st.title("📘 Project README 📘")
 
-    st.markdown("""
-    ## 🎓 Course Certification Rates Predictor 🎓
-    ### By Kemal Yukselir
+  st.markdown("""
+  ## 🎓 Course Certification Rates Predictor 🎓
+  ### By Kemal Yukselir
 
-    **Objective:**  
-    Predict the percentage of students who will complete and earn a certificate in an online course, using historical course performance data.
-                
-    # References
-    - [Harvard / MIT](https://www.kaggle.com/datasets/edx/course-study?resource=download)
+  **Objective:**  
+  Predict the percentage of students who will complete and earn a certificate in an online course, using historical course performance data.
+              
+  # References
+  - [Harvard / MIT](https://www.kaggle.com/datasets/edx/course-study?resource=download)
 
-    **Key Features:**
-    - Linear regression model
-    - Feature engineering 
-    - Robust scaling  
-    - Feature combination
-    - Cross-validation
-    - Target encoding for categorical variables
-    - Streamlit dashboard with live predictions
+  **Key Features:**
+  - Linear regression model
+  - Feature engineering 
+  - Robust scaling  
+  - Feature combination
+  - Cross-validation
+  - Target encoding for categorical variables
+  - Streamlit dashboard with live predictions
 
-    **Modules:**
-    - Pandas
-    - NumPy
-    - Scikit-learn
-    - Statsmodels
-    - Category Encoders
-    - Streamlit
-    - Matplotlib
-    - Seaborn
+  **Modules:**
+  - Pandas
+  - NumPy
+  - Scikit-learn
+  - Statsmodels
+  - Category Encoders
+  - Streamlit
+  - Matplotlib
+  - Seaborn
 
-    **Project Highlights:**
-    - R² = 0.823
-    - Cond. No. = 9.04
-    - AIC, BIC = 1166, 1197
-    - F-statistic = 128.7        
-    - (Train) Average CV RMSE: 3.077
-    - (Test) Average CV RMSE: 3.100
-    """)
-elif page == "Ethical Standards":
+  **Project Highlights:**
+  - R² = 0.823
+  - Cond. No. = 9.04
+  - AIC, BIC = 1166, 1197
+  - F-statistic = 128.7        
+  - (Train) Average CV RMSE: 3.077
+  - (Test) Average CV RMSE: 3.100
+  """)
+
+
+def ethical_standards_page():
     st.title("📄 Project Ethical Standards 📄")
 
     st.markdown("""
@@ -89,9 +92,27 @@ elif page == "Ethical Standards":
 
     - [Harvard / MIT MOOC Dataset on Kaggle](https://www.kaggle.com/datasets/edx/course-study?resource=download)
     - [The Ethics of Learning Analytics (Jisc Report)](https://www.jisc.ac.uk/guides/code-of-practice-for-learning-analytics)
-    """)
+    """)    
 
-else:
+
+def insights_page():
+  # Streamlit render
+  st.title("📊 Insights drawn by the dataset 📊")
+  st.image("assets/Figure_1.png", use_container_width=True)
+  st.markdown("""
+  **Due to large number of participants in the dataset, I have decided to use 20% certify rate as the threshold for courses that are considered successful.**
+  - Learners are motivated by real world situations.
+    - Keywords like **policy**, **politics**, and **U.S**. suggest that courses tied to current events and societal issues attract more engagement.
+  
+  - Content based on history builds narrative engagement
+      - **History** and **empire** suggest storytelling and chronological depth, which often leads to more immersive and structured learning paths.
+              
+  - Moral or ethical framing increases engagement
+      - **Hero** and **saving** often symbolize moral missions or ethical discussions, making course content more emotionally resonant.
+  """)
+
+
+def model_page():
     # Title
     st.title("🎓 Student Certification Rate Predictor")
     # Manual input mode
@@ -114,7 +135,6 @@ else:
         audited_50plus = st.slider("Number of Audited Participants (> 50% Course Content Accessed)", 0, 10000, 5000)
         percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 54.98)
 
-
         # Build input data dictionary
         input_data = {
             "const": 1,
@@ -130,4 +150,19 @@ else:
 
         if st.button("Predict % Certified"):
             prediction = model.predict_from_model(input_data)
-            st.success(f"Predicted Certification Rate: {prediction.iloc[0]:.2f}%")
+            st.success(f"Predicted Certification Rate: {prediction.iloc[0]:.2f}%")  
+   
+
+
+if page == "Project Overview":
+    project_overview_page()
+
+elif page == "Ethical Standards":
+    ethical_standards_page()
+
+elif page == "Insights":
+    insights_page()
+
+else:
+    model_page()
+
