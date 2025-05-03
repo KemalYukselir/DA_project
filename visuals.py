@@ -5,10 +5,7 @@ import pandas as pd
 import numpy as np
 
 # Helper tools
-import os # Operating system
-import itertools # Counting things
 from collections import Counter # Counting things
-import re # Regex
 import string # Contains String stuffs
 
 # NLTK suite
