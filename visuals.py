@@ -55,6 +55,33 @@ def heatmap():
 
 print(df_visuals.info())
 
+def check_relationship():
+    """
+    Check and visualize the relationship between a single feature and the target.
+
+    Parameters:
+    - df: pandas DataFrame
+    - feature_col: str, the feature column to check
+    - target_col: str, default is '% Certified'
+    """
+
+    features = ['Median Hours for Certification', '% Played Video', '% Bachelor\'s Degree or Higher','% Posted in Forum']
+    target = '% Certified'
+
+    fig, axes = plt.subplots(nrows=1, ncols=len(features), figsize=(5 * len(features), 5))
+
+    for i, feature in enumerate(features):
+        sns.regplot(x=feature, y=target, data=df_visuals, ax=axes[i])
+        axes[i].set_title(f'{feature} vs {target}')
+        axes[i].set_xlabel(feature)
+        axes[i].set_ylabel(target)
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+
 # Bachelors degree vs Certification rate
 def get_course_title_common_words():
     """Generate a bar plot to visualize the most common words in course titles."""
@@ -100,6 +127,7 @@ def get_course_title_common_words():
     plt.show()
 
     # Course subject vs Certification rate
+
 def get_course_subject_certification_rate():
     """Generate a bar plot to visualize the relationship between course subject and certification rate."""
     # Group by Course Subject and calculate mean % Certified
@@ -116,27 +144,6 @@ def get_course_subject_certification_rate():
     plt.xticks(rotation=30)
     plt.tight_layout()
     plt.show()
-
-# % Certified of > 50% Course Content Accessed vs certifican rate
-# def get_bachelors_degree_certification_rate():
-#     """Generate a line plot to visualize the relationship between bachelor's degree and certification rate."""
-#     plt.figure(figsize=(10, 6))
-#     plt.scatter(df_visuals["% Certified of > 50% Course Content Accessed"],
-#                 df_visuals["% Certified"],
-#                 s=60, alpha=0.7, edgecolors='k')
-
-#     # Optional: Add trendline
-#     z = np.polyfit(df_visuals["% Certified of > 50% Course Content Accessed"], df_visuals["% Certified"], 1)
-#     p = np.poly1d(z)
-#     plt.plot(df_visuals["% Certified of > 50% Course Content Accessed"], p(df_visuals["% Certified of > 50% Course Content Accessed"]), "r--", label="Trend")
-
-#     plt.title("Certification Rate vs. % Certified of > 50% Accessed", fontsize=15)
-#     plt.xlabel("% Certified of > 50% Course Content Accessed", fontsize=12)
-#     plt.ylabel("% Certified", fontsize=12)
-#     plt.grid(True, linestyle='--', alpha=0.5)
-#     plt.legend()
-#     plt.tight_layout()
-#     plt.show()
 
 # Posted in forum vs certification rate lineplot
 def get_posted_forum_certification_rate():
@@ -160,4 +167,5 @@ def get_posted_forum_certification_rate():
     plt.show()
 
 if __name__ == "__main__":
-    get_posted_forum_certification_rate()
+    check_relationship()
+
