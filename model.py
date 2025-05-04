@@ -1,6 +1,7 @@
 from eda import get_clean_df
 import pandas as pd
 import numpy as np
+import itertools
 
 from sklearn.model_selection import train_test_split    # for performing train-test split on the data
 from sklearn.preprocessing import RobustScaler    # for scaling the data
@@ -31,6 +32,7 @@ class LinearRegressionModel:
         self.scaler = ""
         self.apply_scaling()
         self.calculate_vif()
+        self.selected_features = self.feature_selection_aic()
         self.linreg = self.build_model()
 
     def __repr__(self):
@@ -72,31 +74,42 @@ class LinearRegressionModel:
         ##################
         ## Feature engineering
         ##################
+        # Current R measures
+        # 0.695
+        # 0.686
 
         df = df.copy()
 
-        # Combine features
-        df['% Deep learners'] = (df['Audited (> 50% Course Content Accessed)'] / df['Participants (Course Content Accessed)']) * 100
+        df['log_MedianHours'] = np.log(df['Median Hours for Certification'] + 1)
+        df["log_Bachelor's"] = np.log(df["% Bachelor's Degree or Higher"] + 1)
+        df['log_Total_Course_Hours'] = np.log(df['Total Course Hours (Thousands)'] + 1)
+        df['interaction_deep_learn'] = df['% Audited'] * df['% Played Video']
 
         # Drop irrelevant or highly collinear columns
         df.drop(columns=[
-            # "% Bachelor's Degree or Higher", # Drop from log
-            "% Played Video",  # Drop - High p value
-            "% Posted in Forum",  # Drop - High p value
-            "Median Hours for Certification",  # DROP because high p value
-            "Certified", # Very correlated with target
-            "Honor Code Certificates",  # Useless
-            "Year", # Useless
             "Institution",  # Useless
             "Course Number", # Useless
             "Launch Date", # Useless
             "Course Title",  # Useless
             "Instructors", # Useless
+            "Year", # Useless
+            "Honor Code Certificates",  # Useless
+            "Certified", # Same as target
+            "Median Age", # DROP due to ethical reasons
+            "% Female",  # DROP due to ethical reasons
+            "% Male", # DROP due to ethical reasons
+            # "Course Subject", # Target encoded
             "Participants (Course Content Accessed)",  # DROP High VIF
             "Audited (> 50% Course Content Accessed)",  # DROP High VIF
+            "% Certified of > 50% Course Content Accessed", # Don't include it dosnt make sense
+
             "% Audited",  # Highly correlated with Deep learners
-            "% Female",  # DROP because % Male exists
-            # "% Certified of > 50% Course Content Accessed"
+            "% Played Video",  # Drop - High p value
+            "% Posted in Forum",  # Drop - High p value
+            # # "% Grade Higher Than Zero",
+            "Total Course Hours (Thousands)",
+            "Median Hours for Certification",  # DROP because high p value
+            "% Bachelor's Degree or Higher", # Drop from log
         ], inplace=True)
 
         # Add constant
@@ -117,6 +130,7 @@ class LinearRegressionModel:
         if self.DEBUG:
             print(all(X_train_fe.index == self.X_train.index))
             print(all(X_test_fe.index == self.X_test.index))
+            X_train_fe.info()
 
         return X_train_fe, X_test_fe
 
@@ -190,9 +204,6 @@ class LinearRegressionModel:
         # Cross-validation
         self.cross_validation_score(cv=10)
 
-        print("\nManual check x train fe:")
-        print(self.X_train_fe.head(10))
-
     def cross_validation_score(self, cv=5):
         # Use the scaled + encoded training data
         X = self.X_train_fe
@@ -233,7 +244,7 @@ class LinearRegressionModel:
         ##################
         print("Manual Check\n")
         df_manual = pd.DataFrame({'Actual': self.y_test, 'Predicted': y_test_pred})
-        print(df_manual.head(10))
+        print(df_manual.tail(10))
 
     def predict_from_model(self,test_dict):
         ##################
@@ -265,6 +276,24 @@ class LinearRegressionModel:
         # Predict
         prediction = self.linreg.predict(test_df)
         return prediction
+    
+    def feature_selection_aic(self):
+        X = self.X_train_fe.copy()
+        y = self.y_train
+        best_aic = np.inf
+        best_combo = X.columns.tolist()
+        for k in range(1, len(X.columns) + 1):
+            for combo in itertools.combinations(X.columns, k):
+                try:
+                    model = sm.OLS(y, X[list(combo)]).fit()
+                    if model.aic < best_aic:
+                        best_aic = model.aic
+                        best_combo = list(combo)
+                except:
+                    continue
+        if self.DEBUG:
+            print("Selected features by AIC:", best_combo)
+        return best_combo
 
 
         
