@@ -17,16 +17,16 @@ def project_overview_page():
   st.title("📘 Project Overview 📘")
 
   st.markdown("""
-  ## 🎓 Course Certification Rates Predictor 🎓
-  ### By Kemal Yukselir
+  # 🎓 Course Certification Rates Predictor 🎓
+  ## By Kemal Yukselir
 
-  **Objective:**  
+  ### Objective:
   Predict the percentage of students who will complete and earn a certificate in an online course, using historical course performance data.
               
-  # References
+  ### References
   - [Harvard / MIT](https://www.kaggle.com/datasets/edx/course-study?resource=download)
 
-  **Key Features:**
+  ### Key Features:
   - Linear regression model
   - Feature engineering 
   - Robust scaling  
@@ -35,7 +35,7 @@ def project_overview_page():
   - Target encoding for categorical variables
   - Streamlit dashboard with live predictions
 
-  **Modules:**
+  ### Modules:
   - Pandas
   - NumPy
   - Scikit-learn
@@ -45,13 +45,16 @@ def project_overview_page():
   - Matplotlib
   - Seaborn
 
-  **Project Highlights:**
-  - R² = 0.823
-  - Cond. No. = 9.04
-  - AIC, BIC = 1166, 1197
-  - F-statistic = 128.7        
-  - (Train) Average CV RMSE: 3.077
-  - (Test) Average CV RMSE: 3.100
+  ### Project Highlights:
+  
+  With all ethical practise considered, this is the best model I can get with many reruns.
+
+  - R² = 0.688
+  - Cond. No. = 4.46
+  - AIC, BIC = 1293, 1317
+  - F-statistic = 82.39
+  - (Train) Average CV RMSE: 3.966
+  - (Test) Average CV RMSE: 4.677
   """)
 
 
@@ -68,24 +71,26 @@ def ethical_standards_page():
     ### ⚖️ Key Ethical Considerations
 
     - **Bias in Data**  
-      The dataset reflects historical learner behavior, which may be biased toward certain age groups or educational backgrounds.  
-      Predictions should not be used to make high-stakes decisions for individuals.
+      - The dataset reflects historical learner behavior.
+      - To promote fairness, both the insights and the model exclude age and gender.  
+      - Predictions should not be used to make high-stakes decisions for individuals.
 
     - **Data Privacy**  
-      This analysis uses anonymous and aggregate course data. No personal identifiers are included.
+      - This analysis uses anonymous and aggregate course data. No personal identifiers are included.
 
-    - **Fairness in Features**  
-      Categorical variables like `Course Subject` are encoded using **target encoding** to avoid arbitrary weight assignments.  
-      Gender-based columns like `% Male` and `% Female` are handled with caution and transparency.
+    - **Accountability**
+      - Feel free to reach out to me for any other ethical concerns.
+      - [Linkedin](https://www.linkedin.com/in/kemal-yukselir/)
+      - [Gmail](https://mail.google.com/mail/u/0/?fs=1&to=K.Yukselir123@gmail.com&tf=cm)
 
     - **Transparency & Interpretability**  
-      Head over to Project Overview for a detailed rundown of how the model is created.
+      - Head over to Project Overview for a detailed rundown of how the model is created.
+      - This is a open source project available on [Github](https://github.com/KemalYukselir/student-certify-rate)
                 
     - **Intended Use**  
-      This tool is designed for **educational insights only** — such as identifying which course features may lead to higher certification rates.  
-      This tool may be used to help twoards improving current ongoing courses institutions may have.
-                
-      It is **not** intended to create bias towards any group of learners such as ❌**age**❌.
+      - This tool is designed for **educational insights only** — such as identifying which course features may lead to higher certification rates.  
+      - This tool may be used to help twoards improving current ongoing courses institutions may have.         
+      - It is **not** intended to create bias towards any group of learners such as ❌**age**❌.
 
     ### 📚 Further Reading
 
@@ -159,8 +164,8 @@ def model_page():
 
     particapants = st.slider("Number of Participants", 0, 10000, 5000)
     total_course_hours = st.slider("Total Course Hours", 0.0, 1000.0, 418.94)
-    percent_male = st.slider("% Male Participants In Course", 0.0, 100.0, 88.28)
-    median_age = st.slider("Median Age of Participants", 0.0, 100.0, 26.0)
+    # percent_male = st.slider("% Male Participants In Course", 0.0, 100.0, 88.28)
+    # median_age = st.slider("Median Age of Participants", 0.0, 100.0, 26.0)
     percent_bachelor_degree = st.slider("% Participants With Bachelor's Degree or Higher", 0.0, 100.0, 50.0)
     percent_grade_higher = st.slider("% Participants With Grade Higher Than Zero From Quizes", 0.0, 100.0, 28.97)
     audited_50plus = st.slider("Number of Audited Participants (> 50% Course Content Accessed)", 0, 10000, 5000)
@@ -172,8 +177,8 @@ def model_page():
         "% Certified of > 50% Course Content Accessed": percent_certified_50plus,
         "% Grade Higher Than Zero": percent_grade_higher,
         "Total Course Hours (Thousands)": total_course_hours,
-        "Median Age": median_age,
-        "% Male": percent_male,
+        # "Median Age": median_age,
+        # "% Male": percent_male,
         "Course Subject": course_subject,
         "% Bachelor's Degree or Higher": percent_bachelor_degree,
         "% Deep learners": (audited_50plus / particapants) * 100
