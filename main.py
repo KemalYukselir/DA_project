@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd
+import numpy as np
 from model import LinearRegressionModel
 from visuals import get_course_title_common_words
 
@@ -161,27 +161,22 @@ def model_page():
         "Science, Technology, Engineering, and Mathematics",
         'Computer Science'
     ])
-
-    particapants = st.slider("Number of Participants", 0, 10000, 5000)
+    percent_bachelor_degree = st.slider("Percent of Participants With Bachelor's Degree or Higher", 0.0, 100.0, 50.0)
     total_course_hours = st.slider("Total Course Hours", 0.0, 1000.0, 418.94)
-    # percent_male = st.slider("% Male Participants In Course", 0.0, 100.0, 88.28)
-    # median_age = st.slider("Median Age of Participants", 0.0, 100.0, 26.0)
-    percent_bachelor_degree = st.slider("% Participants With Bachelor's Degree or Higher", 0.0, 100.0, 50.0)
+    percent_audited = st.slider("Percent of Participants Who Has Audited the Course", 0.0, 100.0, 88.94)
+    median_hours = st.slider("Median Hours for Certification", 0.0, 200.0, 18.94)
     percent_grade_higher = st.slider("% Participants With Grade Higher Than Zero From Quizes", 0.0, 100.0, 28.97)
-    audited_50plus = st.slider("Number of Audited Participants (> 50% Course Content Accessed)", 0, 10000, 5000)
-    percent_certified_50plus = st.slider("% Certified of > 50% Course Content Accessed", 0.0, 100.0, 54.98)
+    percent_played_video = st.slider("Percent of Participants Who Have Played the Video in the Course", 0.0, 100.0, 58.94)
 
     # Build input data dictionary
     input_data = {
         "const": 1,
-        "% Certified of > 50% Course Content Accessed": percent_certified_50plus,
-        "% Grade Higher Than Zero": percent_grade_higher,
-        "Total Course Hours (Thousands)": total_course_hours,
-        # "Median Age": median_age,
-        # "% Male": percent_male,
         "Course Subject": course_subject,
-        "% Bachelor's Degree or Higher": percent_bachelor_degree,
-        "% Deep learners": (audited_50plus / particapants) * 100
+        "% Grade Higher Than Zero": percent_grade_higher,
+        "log_MedianHours": np.log(median_hours + 1),
+        "log_Bachelor's": np.log(percent_bachelor_degree + 1),
+        "log_Total_Course_Hours": np.log(total_course_hours + 1),
+        "interaction_deep_learn": percent_audited * percent_played_video
     }
 
     if st.button("Predict % Certified"):
