@@ -1,4 +1,6 @@
 import streamlit as st
+# Set page to perma wide
+st.set_page_config(layout="wide")
 import numpy as np
 from model import LinearRegressionModel
 from visuals import get_course_title_common_words
