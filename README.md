@@ -4,7 +4,7 @@
 
 ### ✍️ By Kemal Yukselir
 
-## How to run
+## How to run on test
 - streamlit run main.py
 
 ## Updating venv modules
