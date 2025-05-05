@@ -22,8 +22,10 @@ def project_overview_page():
   # 🎓 Course Certification Rates Predictor 🎓
   ## By Kemal Yukselir
 
-  ### Objective:
+  ### Description:
   Predict the percentage of students who will complete and earn a certificate in an online course, using historical course performance data.
+  Explore insights on some key factors that influence certification rates.
+  Dive into ethical standards when dealing with data and using machine learning responsibly
               
   ### References
   - [Harvard / MIT](https://www.kaggle.com/datasets/edx/course-study?resource=download)
@@ -38,17 +40,18 @@ def project_overview_page():
   - Streamlit dashboard with live predictions
 
   ### Modules:
-  - Pandas
-  - NumPy
-  - Scikit-learn
-  - Statsmodels
-  - Category Encoders
-  - Streamlit
-  - Matplotlib
+  - Pandas  
+  - NumPy  
+  - Scikit-learn  
+  - Statsmodels  
+  - Category Encoders  
+  - Streamlit  
+  - Matplotlib  
   - Seaborn
+  - category_encoders
+  - itertools
 
   ### Project Highlights:
-  
   With all ethical practise considered, this is the best model I can get with many reruns.
 
   - R² = 0.688
