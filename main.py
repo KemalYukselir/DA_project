@@ -48,7 +48,6 @@ def project_overview_page():
   - Streamlit  
   - Matplotlib  
   - Seaborn
-  - category_encoders
   - itertools
 
   ### Project Highlights:

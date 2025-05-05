@@ -38,7 +38,6 @@ Dive into ethical standards when dealing with data and using machine learning re
 - Streamlit  
 - Matplotlib  
 - Seaborn
-- category_encoders
 - itertools
 
 ## 📊 Project Highlights
