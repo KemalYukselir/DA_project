@@ -1,6 +1,6 @@
 # 🎯 Course Certification Rates Predictor
 
-## Live on -> https://student-certify-rate.streamlit.app/
+## Live on -> https://huggingface.co/spaces/Kemzo/Student-certify-rate
 
 ### ✍️ By Kemal Yukselir
 
