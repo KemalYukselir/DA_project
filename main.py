@@ -13,7 +13,7 @@ def load_model():
 model = load_model()
 
 # Sidebar for navigation
-page = st.sidebar.radio("📂 Select a Page", ["Project Overview","Ethical Standards","Insights" ,"Predictor"])
+page = st.selectbox("📂 Select a Page", ["Project Overview","Ethical Standards","Insights" ,"Predictor"])
 
 def project_overview_page():
   st.title("📘 Project Overview 📘")
@@ -106,7 +106,7 @@ def ethical_standards_page():
 def insights_page():
   # Streamlit render
   st.title("📊 Insights drawn by the dataset 📊")
-  st.image("assets/Figure_1.png", use_container_width=True)
+  st.image("assets/Figure_1.png")
   st.markdown("""
   **Due to large number of participants in the dataset, I have decided to use 20% certify rate as the threshold for courses that are considered successful.**
   - Learners are motivated by real world situations.
@@ -118,7 +118,7 @@ def insights_page():
   - Moral or ethical framing increases engagement
       - **Hero** and **saving** often symbolize moral missions or ethical discussions, making course content more emotionally resonant.
   """)
-  st.image("assets/Figure_2.png", use_container_width=True)
+  st.image("assets/Figure_2.png")
   st.markdown("""
   **Looking at this barplot, I wanted to compare how course subjects are performing**
   - This graph is based on certifcation rate averages of course subjects.
@@ -136,7 +136,7 @@ def insights_page():
   - **Support Systems** -> Implementing mentorship programs or peer support groups can help students tackle challenges.
   - **Gamification** -> Adding game-like elements to the learning process can make it more engaging and less daunting.
   """)
-  st.image("assets/Figure_3.png", use_container_width=True)
+  st.image("assets/Figure_3.png")
   st.markdown("""
     **Looking at this line plot, I wanted to compare how students posting in forums affects certification rates**  
     - This graph is based on **certification rate averages** grouped by **forum post percentage**.  
