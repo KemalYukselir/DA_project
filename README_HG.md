@@ -1,5 +1,5 @@
 ---
-title: Remote Worker Analysis
+title: Student Certify Analysis
 app_file: main.py
 emoji: 🚀
 colorFrom: red
